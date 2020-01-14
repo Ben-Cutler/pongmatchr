@@ -39,6 +39,14 @@ class PlayerControllerTest {
     }
 
     @Test
-    fun get() {
+    fun `get endpoint returns all waiting players`() {
+        val person1 = Player(name = "Ben")
+        every { playerRepository.findAll() } returns listOf(person1)
+
+        val allPlayers = subject.getAll()
+
+        assertThat(allPlayers, equalTo(listOf(person1)))
+
     }
+
 }

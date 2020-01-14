@@ -12,8 +12,8 @@ class PlayerController(val playerRepository: PlayerRepository) {
         return playerRepository.save(Player(name = request.name))
     }
 
-    @GetMapping("/api/player")
-    fun get(): Player {
-        return Player(id = 666, name = "Foo")
+    @GetMapping("/api/players")
+    fun getAll(): List<Player> {
+        return playerRepository.findAll().toList()
     }
 }
