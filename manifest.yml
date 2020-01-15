@@ -1,0 +1,13 @@
+---
+applications:
+  - name: pongmatchr
+    buildpacks:
+      - https://github.com/cloudfoundry/java-buildpack.git
+    path: build/libs/pongmatchr-0.0.1-SNAPSHOT.jar
+    memory: 2G
+    env:
+      SPRING_PROFILES_ACTIVE: prod
+    routes:
+      - route: pongmatchr.cfapps.io
+    services:
+      - pongmatchr-db

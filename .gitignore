@@ -33,3 +33,5 @@ out/
 
 build.gradle.kts.bak
 settings.gradle.kts.bak
+
+src/main/resources/static/**

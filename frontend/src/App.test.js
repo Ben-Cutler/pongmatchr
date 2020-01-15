@@ -7,6 +7,11 @@ import { act } from "react-dom/test-utils";
 jest.mock("./apiHelper");
 
 describe("App", () => {
+  beforeEach(() => {
+    addPlayer.mockResolvedValue({status: 200});
+    getPlayers.mockResolvedValue([{ name: "Ben" }, { name: "Tom" }]);
+  });
+
   it("renders a prompt to enter user's name", () => {
     const subject = render();
 
@@ -16,8 +21,6 @@ describe("App", () => {
   });
 
   it("gets all players upon first loading", async () => {
-    getPlayers.mockResolvedValue([{ name: "Ben" }, { name: "Tom" }]);
-
     const subject = deepRender();
 
     await act(async () => {
@@ -40,8 +43,6 @@ describe("App", () => {
   });
 
   it("adds the users name to the list once it is successfully submitted", async () => {
-    addPlayer.mockResolvedValue({status: 200});
-
     const subject = render();
 
     subject.find("input").simulate("change", { target: { value: "Elaine" } });
