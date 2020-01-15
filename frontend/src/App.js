@@ -6,10 +6,16 @@ function App() {
   const [name, setName] = useState("");
   const [players, setPlayers] = useState([]);
 
-  useEffect(() => {
+  const fetchPlayer = () => {
     getPlayers().then((result) => {
       setPlayers(result)
     })
+  };
+
+  useEffect(fetchPlayer, []);
+
+  useEffect( () => {
+    setInterval(fetchPlayer, 5000)
   }, []);
 
   return (

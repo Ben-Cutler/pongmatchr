@@ -23,10 +23,6 @@ describe("App", () => {
   it("gets all players upon first loading", async () => {
     const subject = deepRender();
 
-    await act(async () => {
-      await subject.update();
-    });
-
     subject.update();
     expect(
       subject
@@ -51,11 +47,23 @@ describe("App", () => {
     expect(subject.find('[data-aid="player"]').at(0).text()).toEqual("Elaine");
   });
 
+  it("Periodically updates users in the waiting room", async () => {
+    jest.useFakeTimers();
+    const subject = deepRender()
+
+    jest.advanceTimersByTime(11000);
+    expect(getPlayers).toHaveBeenCalledTimes(3)
+  });
+
   const render = () => {
     return shallow(<App />);
   };
 
-  const deepRender = () => {
-    return mount(<App />);
+  const deepRender = async () => {
+    const subject = mount(<App />);
+    await act(async () => {
+      await subject.update();
+    });
+    return subject
   };
 });
