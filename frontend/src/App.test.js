@@ -12,6 +12,11 @@ describe("App", () => {
     getPlayers.mockResolvedValue([{ name: "Ben" }, { name: "Tom" }]);
   });
 
+  afterEach(() => {
+    addPlayer.mockReset();
+    getPlayers.mockReset();
+  })
+
   it("renders a prompt to enter user's name", () => {
     const subject = render();
 
@@ -21,7 +26,7 @@ describe("App", () => {
   });
 
   it("gets all players upon first loading", async () => {
-    const subject = deepRender();
+    const subject = await deepRender();
 
     subject.update();
     expect(
@@ -49,9 +54,12 @@ describe("App", () => {
 
   it("Periodically updates users in the waiting room", async () => {
     jest.useFakeTimers();
-    const subject = deepRender()
 
-    jest.advanceTimersByTime(11000);
+    await deepRender();
+
+    await act(async () => {
+      await jest.advanceTimersByTime(11000);
+    });
     expect(getPlayers).toHaveBeenCalledTimes(3)
   });
 
@@ -61,9 +69,11 @@ describe("App", () => {
 
   const deepRender = async () => {
     const subject = mount(<App />);
+
     await act(async () => {
       await subject.update();
     });
-    return subject
+
+    return subject;
   };
 });
