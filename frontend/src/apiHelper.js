@@ -1,5 +1,5 @@
-export const addPlayer = (playerName) => {
-  window.fetch('/api/players', {
+export const addPlayer = async (playerName) => {
+  return await window.fetch('/api/players', {
     method : 'POST',
     headers:{
       'Content-type' : 'application/json'

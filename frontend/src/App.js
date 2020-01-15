@@ -6,7 +6,7 @@ function App() {
   const [name, setName] = useState("");
   const [players, setPlayers] = useState([]);
 
-  useEffect( () => {
+  useEffect(() => {
     getPlayers().then((result) => {
       setPlayers(result)
     })
@@ -19,8 +19,13 @@ function App() {
         setName(e.target.value)
       }}/>
       <button onClick={() => {
-        addPlayer(name)
-      }}>Find Match
+        addPlayer(name).then((response) => {
+          if (response.status === 200) {
+            setPlayers([...players, {'name' : name}])
+          }
+        })
+      }}>
+        Find Match
       </button>
       {
         players.map((player) => <div key={player.name} data-aid="player">{player.name}</div>)
