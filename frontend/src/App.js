@@ -26,9 +26,7 @@ function App() {
       }}/>
       <button onClick={() => {
         addPlayer(name).then((response) => {
-          if (response.status === 200) {
-            setPlayers([...players, {'name' : name}])
-          }
+          setPlayers(response);
         })
       }}>
         Find Match

@@ -26,16 +26,36 @@ class PlayerControllerTest {
     }
 
     @Test
-    fun `add player saves a player to the database`() {
+    fun `add player saves a player to the database and returns a list of waiting players`() {
         val request = PlayerRequest(name = "bob")
         val player = Player(name = "bob")
 
         every { playerRepository.save(any<Player>()) } returns player
+        every { playerRepository.findAll() } returnsMany listOf(emptyList(), listOf(player))
 
         val result = subject.add(request)
 
         verify(exactly = 1) {playerRepository.save(player)}
-        assertThat(result, equalTo(player))
+        assertThat(result, equalTo(listOf(player)))
+    }
+
+    @Test
+    fun `add player matches with another player if there are players in the table and returns list of all waiting players`() {
+        val request = PlayerRequest(name = "bob")
+        val player1 = Player(name = "alice")
+        val player2 = Player(name = "bob")
+
+        every { playerRepository.findAll() } returnsMany listOf(listOf(player1), emptyList())
+
+        // call to pong-queue app Add player
+        val result = subject.add(request)
+
+        verify(exactly = 1) {
+            playerRepository.delete(player1)
+        }
+        verify(exactly = 0) {playerRepository.save(player2)}
+
+        assertThat(result, equalTo(emptyList()))
     }
 
     @Test

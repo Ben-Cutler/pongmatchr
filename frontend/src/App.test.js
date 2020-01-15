@@ -8,7 +8,7 @@ jest.mock("./apiHelper");
 
 describe("App", () => {
   beforeEach(() => {
-    addPlayer.mockResolvedValue({status: 200});
+    addPlayer.mockResolvedValue([]);
     getPlayers.mockResolvedValue([{ name: "Ben" }, { name: "Tom" }]);
   });
 
@@ -44,6 +44,8 @@ describe("App", () => {
   });
 
   it("adds the users name to the list once it is successfully submitted", async () => {
+    addPlayer.mockResolvedValue([{name: "Elaine"}]);
+
     const subject = render();
 
     subject.find("input").simulate("change", { target: { value: "Elaine" } });
