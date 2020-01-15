@@ -20,6 +20,9 @@ class PlayerControllerTest {
     @RelaxedMockK
     private lateinit var playerRepository: PlayerRepository
 
+    @RelaxedMockK
+    private lateinit var pongQueueClient: PongQueueClient
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -47,13 +50,11 @@ class PlayerControllerTest {
 
         every { playerRepository.findAll() } returnsMany listOf(listOf(player1), emptyList())
 
-        // call to pong-queue app Add player
         val result = subject.add(request)
 
-        verify(exactly = 1) {
-            playerRepository.delete(player1)
-        }
+        verify(exactly = 1) { playerRepository.delete(player1) }
         verify(exactly = 0) {playerRepository.save(player2)}
+        verify(exactly = 1) { pongQueueClient.addToList(PongItem(Name = "alice + bob")) }
 
         assertThat(result, equalTo(emptyList()))
     }
@@ -66,7 +67,5 @@ class PlayerControllerTest {
         val allPlayers = subject.getAll()
 
         assertThat(allPlayers, equalTo(listOf(person1)))
-
     }
-
 }
