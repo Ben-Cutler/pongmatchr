@@ -8,7 +8,7 @@ describe("apiHelper", () => {
 
     const result = await addPlayer("player1");
 
-    expect(window.fetch).toHaveBeenCalledWith("/api/players", {
+    expect(window.fetch).toHaveBeenCalledWith("/api/waiting_room_entries", {
       method: "POST",
       headers: {
         'Content-type': 'application/json'
@@ -39,7 +39,7 @@ describe("apiHelper", () => {
 
     const result = await getPlayers();
 
-    expect(window.fetch).toHaveBeenCalledWith("/api/players", {
+    expect(window.fetch).toHaveBeenCalledWith("/api/waiting_room_entries", {
       method: "GET",
     });
 

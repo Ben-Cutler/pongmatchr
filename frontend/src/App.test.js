@@ -3,13 +3,15 @@ import App from "./App";
 import { mount, shallow } from "enzyme";
 import { addPlayer, getPlayers } from "./apiHelper";
 import { act } from "react-dom/test-utils";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 
 jest.mock("./apiHelper");
 
 describe("App", () => {
   beforeEach(() => {
     addPlayer.mockResolvedValue([]);
-    getPlayers.mockResolvedValue([{ name: "Ben" }, { name: "Tom" }]);
+    getPlayers.mockResolvedValue([{id : 1,player: { name: "Ben" }}, {id:1 , player: { name: "Tom" }}]);
   });
 
   afterEach(() => {
@@ -20,12 +22,12 @@ describe("App", () => {
   it("renders a prompt to enter user's name", () => {
     const subject = render();
 
-    subject.find("input").simulate("change", { target: { value: "player1" } });
-    subject.find("button").simulate("click");
+    subject.find(TextField).simulate("change", { target: { value: "player1" } });
+    subject.find(Button).simulate("click");
     expect(addPlayer).toHaveBeenCalledWith("player1");
   });
 
-  it("gets all players upon first loading", async () => {
+  it("gets all players upon first loading, Avatar is also a char :p", async () => {
     const subject = await deepRender();
 
     subject.update();
@@ -34,24 +36,24 @@ describe("App", () => {
         .find('[data-aid="player"]')
         .at(0)
         .text()
-    ).toEqual("Ben");
+    ).toEqual("BBen");
     expect(
       subject
         .find('[data-aid="player"]')
         .at(1)
         .text()
-    ).toEqual("Tom");
+    ).toEqual("TTom");
   });
 
   it("adds the users name to the list once it is successfully submitted", async () => {
-    addPlayer.mockResolvedValue([{name: "Elaine"}]);
+    addPlayer.mockResolvedValue([{id:1, player:{name: "Elaine"}}]);
 
     const subject = render();
 
-    subject.find("input").simulate("change", { target: { value: "Elaine" } });
-    await subject.find("button").simulate("click");
+    subject.find(TextField).simulate("change", { target: { value: "Elaine" } });
+    await subject.find(Button).simulate("click");
 
-    expect(subject.find('[data-aid="player"]').at(0).text()).toEqual("Elaine");
+    expect(subject.find('[data-aid="player"]').at(0).text()).toEqual("EElaine");
   });
 
   it("Periodically updates users in the waiting room", async () => {

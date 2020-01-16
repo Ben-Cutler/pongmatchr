@@ -1,5 +1,5 @@
 package mil.af.kr.pongmatchr
 
-data class PlayerRequest(
+data class WaitingRoomRequest(
     val name: String
 )

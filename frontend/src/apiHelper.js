@@ -1,5 +1,5 @@
 export const addPlayer = async (playerName) => {
-  const response = await window.fetch('/api/players', {
+  const response = await window.fetch('/api/waiting_room_entries', {
     method : 'POST',
     headers:{
       'Content-type' : 'application/json'
@@ -15,7 +15,7 @@ export const addPlayer = async (playerName) => {
 };
 
 export const getPlayers = async () => {
-  const response = await window.fetch('/api/players', {
+  const response = await window.fetch('/api/waiting_room_entries', {
     method : 'GET',
   });
   return await response.json()

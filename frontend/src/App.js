@@ -39,8 +39,8 @@ function App() {
       <div className="App__playerWaitingSpace">
         <h2>Waiting room</h2>
         {
-          players.map((player) => <div className="App__waitingPlayer">
-            <Avatar>{player.name[0]}</Avatar><span>{player.name}</span></div>)
+          players.map((player) => <div className="App__waitingPlayer" data-aid="player" key={player.player.name}>
+            <Avatar>{player.player.name[0]}</Avatar><span>{player.player.name}</span></div>)
         }
       </div>
     </div>
