@@ -1,7 +1,7 @@
 import React from "react";
 import App from "./App";
 import { mount, shallow } from "enzyme";
-import { addPlayer, getPlayers } from "./apiHelper";
+import { addPlayer, getPlayers, getMatches } from "./apiHelper";
 import { act } from "react-dom/test-utils";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -12,6 +12,7 @@ describe("App", () => {
   beforeEach(() => {
     addPlayer.mockResolvedValue([]);
     getPlayers.mockResolvedValue([{id : 1,player: { name: "Ben" }}, {id:1 , player: { name: "Tom" }}]);
+    getMatches.mockResolvedValue([])
   });
 
   afterEach(() => {

@@ -19,6 +19,9 @@ class WaitingRoomEntryControllerTest {
     private lateinit var subject: WaitingRoomEntryController
 
     @RelaxedMockK
+    private lateinit var matchRepository: MatchRepository
+
+    @RelaxedMockK
     private lateinit var waitingRoomEntryRepository: WaitingRoomEntryRepository
 
     @RelaxedMockK
@@ -38,7 +41,7 @@ class WaitingRoomEntryControllerTest {
         val player = Player(id = 1, name = "bob")
         val waitingRoom = WaitingRoomEntry(id = 0, player = player)
 
-        every { playerRepository.findByName("bob") } returns Optional.of(player)
+        every { playerRepository.findByName("bob") } returns listOf(player)
         every { waitingRoomEntryRepository.save(any<WaitingRoomEntry>()) } returns waitingRoom
         every { waitingRoomEntryRepository.findAll() } returnsMany listOf(emptyList(), listOf(waitingRoom))
 
@@ -55,7 +58,7 @@ class WaitingRoomEntryControllerTest {
         val waitingRoom = WaitingRoomEntry( player = player)
 
         every { playerRepository.save(any<Player>())} returns player
-        every { playerRepository.findByName("Yoda")} returns Optional.empty()
+        every { playerRepository.findByName("Yoda")} returns emptyList()
         every { waitingRoomEntryRepository.save(any<WaitingRoomEntry>())} returns waitingRoom
         every { waitingRoomEntryRepository.findAll()} returnsMany listOf(emptyList(), listOf(waitingRoom))
 
@@ -68,22 +71,25 @@ class WaitingRoomEntryControllerTest {
     }
 
     @Test
-    fun `add player matches with another player if there are players in the table and returns list of all waiting players`() {
+    fun `add player matches with another player if there are players in the table, returns a list of all waiting players and creates a match`() {
         val request = WaitingRoomRequest(name = "bob")
         val player1 = Player(name = "alice")
         val player2 = Player(name = "bob")
-        val waitingRoom1 = WaitingRoomEntry(player = player1)
-        val waitingRoom2 = WaitingRoomEntry(player = player2)
+        val waitingRoomEntry1 = WaitingRoomEntry(player = player1)
+        val waitingRoomEntry2 = WaitingRoomEntry(player = player2)
+        val match = Match(player1 = player1, player2 = player2)
 
-        every { waitingRoomEntryRepository.findAll() } returnsMany listOf(listOf(waitingRoom1), emptyList())
-        every { playerRepository.findByName("alice") } returns Optional.of(player1)
-        every { playerRepository.findByName("bob") } returns Optional.of(player2)
+        every { waitingRoomEntryRepository.findAll() } returnsMany listOf(listOf(waitingRoomEntry1), emptyList())
+        every { playerRepository.findByName("alice") } returns listOf(player1)
+        every { playerRepository.findByName("bob") } returns listOf(player2)
+        every { matchRepository.save(any<Match>())} returns match
 
         val result = subject.add(request)
 
-        verify(exactly = 1) { waitingRoomEntryRepository.delete(waitingRoom1) }
-        verify(exactly = 0) { waitingRoomEntryRepository.save(waitingRoom2) }
+        verify(exactly = 1) { waitingRoomEntryRepository.delete(waitingRoomEntry1) }
+        verify(exactly = 0) { waitingRoomEntryRepository.save(waitingRoomEntry2) }
         verify(exactly = 1) { pongQueueClient.addToList(PongItem(Name = "alice + bob")) }
+        verify(exactly = 1) {matchRepository.save(match)}
 
         assertThat(result, equalTo(emptyList()))
     }

@@ -1,4 +1,4 @@
-import {addPlayer, getPlayers} from "./apiHelper";
+import {addPlayer, getMatches, getPlayers, updateMatch} from "./apiHelper";
 
 describe("apiHelper", () => {
   it("addPlayer does a POST to /api/players", async () => {
@@ -44,5 +44,38 @@ describe("apiHelper", () => {
     });
 
     expect(result).toEqual(players);
-  })
+  });
+
+  it('gets all matches', async () => {
+    global.fetch = jest.fn();
+    const matches = [];
+    global.fetch.mockResolvedValue({json: async () => matches});
+
+
+    const result = await getMatches();
+
+    expect(window.fetch).toHaveBeenCalledWith("/api/matches", {
+      method: "GET",
+    });
+
+    expect(result).toEqual(matches);
+  });
+
+  it('updates an existing match', async () => {
+    global.fetch = jest.fn();
+    const match = {id: 123, winner: {id: 1, name: "bob"}};
+    global.fetch.mockResolvedValue({json: async () => match, status: 200});
+
+    const result = await updateMatch(123, match);
+
+    expect(window.fetch).toHaveBeenCalledWith("/api/matches/123", {
+      method: "PATCH",
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(match)
+    });
+
+    expect(result).toEqual(match);
+  });
 });

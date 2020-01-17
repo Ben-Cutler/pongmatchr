@@ -3,7 +3,7 @@ import './App.css';
 import {addPlayer, getPlayers} from "./apiHelper";
 import Button from "@material-ui/core/Button";
 import {Avatar, TextField} from "@material-ui/core";
-import Chip from "@material-ui/core/Chip";
+import {Matches} from "./Matches";
 
 function App() {
   const [name, setName] = useState("");
@@ -14,6 +14,7 @@ function App() {
       setPlayers(result)
     })
   };
+
 
   useEffect(fetchPlayers, []);
 
@@ -43,6 +44,7 @@ function App() {
             <Avatar>{player.player.name[0]}</Avatar><span>{player.player.name}</span></div>)
         }
       </div>
+      <Matches/>
     </div>
   );
 }

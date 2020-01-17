@@ -6,25 +6,31 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class WaitingRoomEntryController(val waitingRoomEntryRepository: WaitingRoomEntryRepository, val pongClient: PongQueueClient, val playerRepository: PlayerRepository) {
+class WaitingRoomEntryController(
+        val waitingRoomEntryRepository: WaitingRoomEntryRepository,
+        val pongClient: PongQueueClient,
+        val playerRepository: PlayerRepository,
+        val matchRepository: MatchRepository
+) {
     @PostMapping("/api/waiting_room_entries")
     fun add(@RequestBody request: WaitingRoomRequest): List<WaitingRoomEntry> {
         val allWaitingPlayers = waitingRoomEntryRepository.findAll().toList()
 
-        val optionalPlayer = playerRepository.findByName(request.name)
+        val players = playerRepository.findByName(request.name)
 
-        val player = if (optionalPlayer.isEmpty()) {
-            playerRepository.save(Player(name = request.name))
+        val player = if (players.isEmpty()) {
+            playerRepository.save(Player(name = request.name)) // Case where you add player to Players table
         } else {
-            optionalPlayer.get()
+            players[0] // Case where you get existing player from Players table
         }
 
         if (allWaitingPlayers.isEmpty()) {
-            waitingRoomEntryRepository.save(WaitingRoomEntry(player = player))
+            waitingRoomEntryRepository.save(WaitingRoomEntry(player = player)) // Save player to waiting list
         } else {
-            val waitingRoomPlayer = allWaitingPlayers[0]
-            waitingRoomEntryRepository.delete(waitingRoomPlayer)
-            pongClient.addToList(PongItem("${waitingRoomPlayer.player.name} + ${request.name}"))
+            val waitingRoomEntry = allWaitingPlayers[0]
+            waitingRoomEntryRepository.delete(waitingRoomEntry)
+            pongClient.addToList(PongItem("${waitingRoomEntry.player.name} + ${request.name}")) // Match!
+            matchRepository.save(Match(player1 = waitingRoomEntry.player, player2 = player))
         }
         return waitingRoomEntryRepository.findAll().toList()
     }
